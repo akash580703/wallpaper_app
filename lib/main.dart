@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget{
  Widget build(BuildContext context){
    
    return MaterialApp(
-    home:RandomWord(),
+//     home:RandomWord(),
     theme:ThemeData(primaryColor:Colors.red[200])  
    );
 
