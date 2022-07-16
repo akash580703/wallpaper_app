@@ -26,7 +26,7 @@ class ImageModel{
     @required String? id,
     @required Map<String,dynamic>? json,
   }){
-    return ImageModel(
+    return ImageModel (
       id: id,
       name: json?['name'],
       imageUrl: json?['imageUrl'],
