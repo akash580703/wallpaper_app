@@ -44,19 +44,7 @@ final _wordsList=<WordPair>[];
 final Set pairs=Set();
 var x;
 
-query()async{
 
-  await Firebase.initializeApp( 
-  );
-  FirebaseFirestore.instance
-    .collection('images')
-    .get()
-    .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
-            print(doc["imageUrl"]);
-        });
-    });
-}
  Future<DocumentSnapshot> getData() async {
     
     return await FirebaseFirestore.instance
