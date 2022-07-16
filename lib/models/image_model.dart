@@ -13,7 +13,7 @@ class ImageModel{
   DateTime? viewTime;
 
  ImageModel({
-   this.id,
+   this.id,required 
     this.name,
     this.imageUrl,
     this.thumbnailUrl,
@@ -23,8 +23,8 @@ class ImageModel{
   });
 
   factory ImageModel.fromJson({
-    String? id,
-    Map<String,dynamic>? json,
+    @required String? id,
+    @required Map<String,dynamic>? json,
   }){
     return ImageModel(
       id: id,
