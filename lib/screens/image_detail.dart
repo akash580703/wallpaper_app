@@ -21,7 +21,7 @@ import 'package:crash/utils.dart';
 class ImageDetailPage extends StatefulWidget {
   final ImageModel imageModel;
 
-  const ImageDetailPage(this.imageModel, {Key key}) : super(key: key);
+  const ImageDetailPage(this.imageModel, {Key? key}) : super(key: key);
 
   @override
   _ImageDetailPageState createState() => _ImageDetailPageState();
@@ -43,19 +43,20 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
   @override
   void initState() {
     super.initState();
+    // ignore: deprecated_member_use
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
 
     isLoading = false;
     imageModel = widget.imageModel;
 
     final imageStream = imagesCollection
-        .doc(imageModel.id)
+        .doc(imageModel!.id)
         .snapshots()
         .map(mapperImageModel);
     subscription = imageStream.listen(_onListen);
 
-    _increaseCount('viewCount', imageModel.id);
-    _insertToRecent(imageModel);
+    _increaseCount('viewCount', imageModel!.id.toString());
+    _insertToRecent(imageModel!);
 
     subscription1 = Rx.combineLatest2<ImageModel, bool, Map<String, dynamic>>(
       imageStream,
@@ -79,15 +80,15 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
 
     _isFavoriteStreamController.addStream(
       Stream.fromFuture(
-        imageDB.isFavoriteImage(imageModel.id),
+        imageDB.isFavoriteImage(imageModel!.id.toString()),
       ),
     );
   }
 
   @override
   void dispose() {
-    subscription.cancel();
-    subscription1.cancel();
+    subscription!.cancel();
+    subscription!.cancel();
     _isFavoriteStreamController.close();
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     super.dispose();
@@ -132,7 +133,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
         }
         final isFavorite = snapshot.data;
         return IconButton(
-          icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+          icon: Icon(isFavorite! ? Icons.favorite : Icons.favorite_border),
           onPressed: () => _changeFavoriteStatus(isFavorite),
           tooltip: isFavorite ? 'Remove from favorites' : 'Add to favorites',
         );
@@ -153,7 +154,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
 
     final textName = Expanded(
       child: Text(
-        imageModel.name,
+        imageModel!.name.toString(),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(color: Colors.white, fontSize: 16.0),
@@ -198,9 +199,9 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
   Center _buildCenterImage() {
     return Center(
       child: Hero(
-        tag: imageModel.id,
+        tag: imageModel!.id.toString(),
         child: CachedNetworkImage(
-          imageUrl: imageModel.imageUrl,
+          imageUrl: imageModel!.imageUrl.toString(),
           fit: BoxFit.cover,
           placeholder: (context, url) => Container(
             constraints: BoxConstraints.expand(),
@@ -232,7 +233,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
     try {
       await methodChannel.invokeMethod(
         shareImageToFacebook,
-        imageModel.imageUrl,
+        imageModel!.imageUrl.toString(),
       );
     } catch (e) {
       print('Share to fb error: $e');
@@ -269,7 +270,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
       Directory externalDir;
       switch (targetPlatform) {
         case TargetPlatform.android:
-          externalDir = await getExternalStorageDirectory();
+          externalDir = (await getExternalStorageDirectory())!;
           break;
         case TargetPlatform.iOS:
           externalDir = await getApplicationDocumentsDirectory();
@@ -281,7 +282,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
       print('externalDir=$externalDir');
 
       final filePath =
-          path.join(externalDir.path, 'flutterImages', imageModel.id + '.png');
+          path.join(externalDir.path, 'flutterImages', imageModel!.id.toString() + '.png');
 
       final file = File(filePath);
       if (file.existsSync()) {
@@ -314,9 +315,9 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
       if (saveFileResult) {
         await ImageDB.getInstance().insertDownloadedImage(
           DownloadedImage(
-            imageModel.id,
-            imageModel.name,
-            path.join('flutterImages', imageModel.id + '.png'),
+            imageModel!.id.toString(),
+            imageModel!.name.toString(),
+            path.join('flutterImages', imageModel!.id.toString() + '.png'),
             DateTime.now(),
           ),
         );
@@ -333,16 +334,16 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
         methodChannel
             .invokeMethod(
               scanFile,
-              <String>['flutterImages', '${imageModel.id}.png'],
+              <String>['flutterImages', '${imageModel!.id}.png'],
             )
             .then((result) => print('Scan file: $result'))
             .catchError((e) => print('Scan file error: $e')),
       );
 
       // increase download count
-      _increaseCount('downloadCount', imageModel.id);
+      _increaseCount('downloadCount', imageModel!.id.toString());
     } on PlatformException catch (e) {
-      _showSnackBar(e.message);
+      _showSnackBar(e.message!);
     } catch (e, s) {
       _showSnackBar('An error occurred');
       debugPrint('Download image: $e, $s');
@@ -357,7 +358,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
     }
   }
 
-  Future<bool> _showDialogSetImageAsWallpaper() {
+  Future<bool?> _showDialogSetImageAsWallpaper() {
     return showDialog<bool>(
         context: context,
         builder: (context) {
@@ -386,7 +387,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
-            child: isLoading ? CircularProgressIndicator() : Container(),
+            child: isLoading! ? CircularProgressIndicator() : Container(),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -394,7 +395,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
               Flexible(
                 child: FlatButton(
                   padding: const EdgeInsets.all(16.0),
-                  onPressed: isLoading ? onPressedWhileLoading : _downloadImage,
+                  onPressed: isLoading! ? onPressedWhileLoading : _downloadImage,
                   child: Text(
                     'Download',
                     textAlign: TextAlign.center,
@@ -406,7 +407,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
               Flexible(
                 child: FlatButton(
                   padding: const EdgeInsets.all(16.0),
-                  onPressed: isLoading ? onPressedWhileLoading : _setWallpaper,
+                  onPressed: isLoading! ? onPressedWhileLoading : _setWallpaper,
                   child: Text(
                     'Set wallpaper',
                     textAlign: TextAlign.center,
@@ -433,7 +434,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
       Directory externalDir;
       switch (targetPlatform) {
         case TargetPlatform.android:
-          externalDir = await getExternalStorageDirectory();
+          externalDir = (await getExternalStorageDirectory())!;
           break;
         case TargetPlatform.iOS:
           externalDir = await getApplicationDocumentsDirectory();
@@ -443,7 +444,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
           return _done();
       }
       final filePath =
-          path.join(externalDir.path, 'flutterImages', imageModel.id + '.png');
+          path.join(externalDir.path, 'flutterImages', imageModel!.id.toString() + '.png');
 
       // check image is exists
       if (!File(filePath).existsSync()) {
@@ -457,7 +458,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
           try {
             final res = await methodChannel.invokeMethod(
               setWallpaper,
-              <String>['flutterImages', '${imageModel.id}.png'],
+              <String>['flutterImages', '${imageModel!.id}.png'],
             );
             _showSnackBar(res);
           } finally {
@@ -467,11 +468,11 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
       } else if (targetPlatform == TargetPlatform.iOS) {
         await methodChannel.invokeMethod(
           setWallpaper,
-          <String>['flutterImages', '${imageModel.id}.png'],
+          <String>['flutterImages', '${imageModel!.id}.png'],
         );
       }
     } on PlatformException catch (e) {
-      _showSnackBar(e.message);
+      _showSnackBar(e.message!);
     } catch (e) {
       _showSnackBar('An error occurred');
       debugPrint('Set wallpaper: $e');
@@ -488,7 +489,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
           await transaction.update(
             document,
             {
-              field: 1 + (documentSnapshot.data()[field] ?? 0),
+              field: 1 + (documentSnapshot.data()![field] ?? 0),
             },
           );
         },
@@ -513,7 +514,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
     debugPrint('onListen $newImage');
     debugPrint('onListen old $imageModel');
     imageDB
-        .updateRecentImage(newImage..viewTime = imageModel.viewTime)
+        .updateRecentImage(newImage..viewTime = imageModel!.viewTime)
         .then((i) => debugPrint('Updated recent $i'))
         .catchError((e) => debugPrint('Updated recent error $e'));
     setState(() => imageModel = newImage);
@@ -521,8 +522,8 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
 
   void _changeFavoriteStatus(bool isFavorite) {
     final result = isFavorite
-        ? imageDB.deleteFavoriteImageById(imageModel.id).then((i) => i > 0)
-        : imageDB.insertFavoriteImage(imageModel).then((i) => i != -1);
+        ? imageDB.deleteFavoriteImageById(imageModel!.id.toString()).then((i) => i > 0)
+        : imageDB.insertFavoriteImage(imageModel!).then((i) => i != -1);
     result.then((b) {
       final msg = isFavorite ? 'Remove from favorites' : 'Add to favorites';
       if (b) {
@@ -533,7 +534,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
       }
       _isFavoriteStreamController.addStream(
         Stream.fromFuture(
-          imageDB.isFavoriteImage(imageModel.id),
+          imageDB.isFavoriteImage(imageModel!.id.toString()),
         ),
       );
     }).catchError((e) {

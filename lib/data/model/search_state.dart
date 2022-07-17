@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart' show ListEquality;
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
-import 'package:crash/data/models/image_model.dart';
+import 'package:crash/data/model/image_model.dart';
 
 @immutable
 class SearchImageState {}

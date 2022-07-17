@@ -23,7 +23,7 @@ class ImageDB {
 
   BriteDatabase _db;
 
-  Future<BriteDatabase> get db async => _db ??= await open();
+  Future<BriteDatabase> get db async => _db;
 
   static Future<BriteDatabase> open() async {
     final directory = await getApplicationDocumentsDirectory();
@@ -117,7 +117,7 @@ class ImageDB {
     return await dbClient.delete(tableRecent, where: '1');
   }
 
-  Future<ImageModel> getRecentImageById(String id) async {
+  Future<ImageModel?> getRecentImageById(String id) async {
     final dbClient = await db;
     final maps = await dbClient.query(
       tableRecent,

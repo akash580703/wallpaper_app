@@ -13,7 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 import 'package:crash/constants.dart';
-import 'package:crash/data/models/image_category_model.dart';
+import 'package:crash/data/model/image_category_model.dart';
 import 'package:crash/utils.dart';
 
 class UploadPage extends StatefulWidget {
@@ -227,7 +227,7 @@ class _UploadPageState extends State<UploadPage> {
     Duration duration = const Duration(seconds: 1, milliseconds: 500),
   }) {
     scaffoldKey.currentState
-        .showSnackBar(SnackBar(content: Text(text), duration: duration));
+        ?.showSnackBar(SnackBar(content: Text(text), duration: duration));
   }
 
   bool _validate() {
@@ -453,7 +453,7 @@ class _AddCategoryState extends State<AddCategoryBottomSheet>
 
   void _addCategory() async {
     if (!_validate()) return;
-    _animController.forward();
+    _animController!.forward();
 
     //upload file
     final extension = path.extension(_imageFile!.path);

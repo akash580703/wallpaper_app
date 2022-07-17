@@ -49,7 +49,8 @@ class _RecentPageState extends State<RecentPage> {
 
     final onDeleted = (int rows) {
       if (rows > 0) {
-        widget.scaffoldKey.currentState.showSnackBar(
+        // ignore: deprecated_member_use
+        widget.scaffoldKey.currentState!?.showSnackBar(
           SnackBar(
             content: Text('Delete successfully'),
           ),
@@ -142,7 +143,7 @@ class _RecentPageState extends State<RecentPage> {
               return buildImageItem(item.image);
             }
 
-            return null;
+            return SizedBox();
           },
           itemCount: items.length,
         );
@@ -216,16 +217,17 @@ class _RecentPageState extends State<RecentPage> {
     try {
       final rows = await ImageDB.getInstance().deleteRecentImageById(id);
       if (rows > 0) {
-        widget.scaffoldKey.currentState.showSnackBar(
+        // ignore: deprecated_member_use
+        widget.scaffoldKey.currentState?.showSnackBar(
           SnackBar(content: Text('Delete successfully')),
         );
       } else {
-        widget.scaffoldKey.currentState.showSnackBar(
+        widget.scaffoldKey.currentState?.showSnackBar(
           SnackBar(content: Text('Delete failed')),
         );
       }
     } catch (e) {
-      widget.scaffoldKey.currentState.showSnackBar(
+      widget.scaffoldKey.currentState?.showSnackBar(
         SnackBar(content: Text('Delete error: $e')),
       );
     }
@@ -245,8 +247,8 @@ class _RecentPageState extends State<RecentPage> {
     images.asMap().forEach((index, image) {
       final viewTime = image.viewTime;
       if (prev == null ||
-          (prev.year != viewTime.year ||
-              prev.month != viewTime!.month ||
+          (prev.year != viewTime!.year ||
+              prev.month != viewTime.month ||
               prev.day != viewTime.day)) {
         final dateTime = DateTime(viewTime!.year, viewTime.month, viewTime.day);
         items.add(_HeaderItem(dateTime));

@@ -185,7 +185,7 @@ class _DownloadedPageState extends State<DownloadedPage> {
   }
 
   void _showSnackBar(String message) =>
-      Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
+      Scaffold.of(context)?.showSnackBar(SnackBar(content: Text(message)));
 }
 
 ///
